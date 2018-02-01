@@ -9,7 +9,12 @@ bot.on('ready', function () {
 })
 
 bot.on('message', function(message) {
-  console.log(message);
+  
+  // On sort directement si le bot n'est pas appelé
+  if (!message.content.startsWith(config.prefix)) {
+    return;
+  }
+
   if (message.content.startsWith(config.prefix + "ping")) {
     modules.ping(message);
   }
