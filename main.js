@@ -12,6 +12,10 @@ bot.on('message', function(message) {
   console.log(message);
   if (message.content.startsWith(config.prefix + "ping")) {
     modules.ping(message);
+  } else {
+    if (message.content.startsWith(config.prefix + "lance")) {
+      modules.alea(message, config);
+    }
   }
 })
 
