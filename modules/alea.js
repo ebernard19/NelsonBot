@@ -8,16 +8,16 @@ module.exports = function(msg, config){
     var dicenb_string = [];
     var dice_string= [];
 
-    //stockes respectivement le message affiché, le tableau de dé, et la somme des dé
-    var rand_msg = '(';
-    var rand = new Array(parseFloat(dicenb_string));
-    var rand_sum = 0;
+    //message de notification sous forme ecrite
+    var notif;
+
 
     //savoir et verifie si on a passer d ou D
     var dpass = false;
 
-    //enleve le "nomDuBot lance"
+    //enleve le "nomDuBot lance" et les espaces pour le calcul apres le lancer de dé ainsi que les espace blanc
     message = message.replace(config.prefix+'lance',"");
+    message = message.replace(/\s/g,"");
 
     //cherche le nombre de dé 
     while(message[i] != 'd' && message[i] != 'D'){
@@ -28,14 +28,22 @@ module.exports = function(msg, config){
     //passe le d ou D
     i += 1;
 
+
     //cherche la valeur du dé
-    while((message[i] >= 0 && message[i] <= 9) || i != message.length ){
+    while((message[i] >= 0 && message[i] <= 9)){
         dice_string += message[i];
         i += 1;
     }
 
+    notif =  'vous avez demandé '+dicenb_string+' dé '+dice_string;
+
     //reset du compteur
     i = 0;
+
+    //stockes respectivement le message affiché, le tableau de dé, et la somme des dé
+    var rand_msg = '(';
+    var rand = new Array(parseFloat(dicenb_string));
+    var rand_sum = 0;
 
     //enregistre les valeur aléatoire dans le tableau de dé
     while( i < (parseFloat(dicenb_string))) {
@@ -51,12 +59,30 @@ module.exports = function(msg, config){
         rand_msg += rand[i] +'+';
         i += 1;
     }
-
+    rand_msg += rand[rand.length - 1] + ')';
+    message = message.replace((dicenb_string+"d"+dice_string),"");
+    while(message.length != 0) {
+        switch(message[0]) {
+            case '+': 
+                notif += " bonus " + message[0]+message[1];
+                rand_msg += message[0] + message[1];
+                rand_sum += parseFloat(message[1]);
+                break;
+            case '-': 
+                notif += " malus " + message[0]+message[1];
+                rand_msg += message[0] + message[1];
+                rand_sum -= parseFloat(message[1]);
+                break;
+            default:
+                notif += " opérateur non reconnu";
+        }
+        message = message.substr(2,);
+    }
     //calcul la dernière valeur et traite la fin du message
     rand_sum += rand[rand.length - 1];
-    rand_msg += rand[rand.length - 1] + ') = ' + rand_sum;
+    rand_msg += ' = ' + rand_sum;
 
     //repond a l'utilisateur qui a demandé la valeur demandé
-    msg.reply('vous avez demandé '+dicenb_string+' dé '+dice_string+'\n'+ rand_msg);
+    msg.reply(notif+'\n'+ rand_msg);
     
  }
